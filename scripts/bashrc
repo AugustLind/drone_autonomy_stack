@@ -1,9 +1,3 @@
-if [[ -f /etc/bash.bashrc ]]; then
-    source /etc/bash.bashrc
+if [[ -f /workspace/scripts/source.sh ]]; then
+    source /workspace/scripts/source.sh
 fi
-
-if [[ -f "$HOME/.bashrc" ]]; then
-    source "$HOME/.bashrc"
-fi
-
-source /workspace/scripts/source.sh
