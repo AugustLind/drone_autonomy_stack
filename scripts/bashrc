@@ -1,0 +1,9 @@
+if [[ -f /etc/bash.bashrc ]]; then
+    source /etc/bash.bashrc
+fi
+
+if [[ -f "$HOME/.bashrc" ]]; then
+    source "$HOME/.bashrc"
+fi
+
+source /workspace/scripts/source.sh
