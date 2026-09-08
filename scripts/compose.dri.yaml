@@ -1,0 +1,10 @@
+services:
+  sim:
+    environment:
+      LOCAL_VIDEO_GID: ${LOCAL_VIDEO_GID:-44}
+      LOCAL_RENDER_GID: ${LOCAL_RENDER_GID:-109}
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - ${LOCAL_VIDEO_GID:-44}
+      - ${LOCAL_RENDER_GID:-109}

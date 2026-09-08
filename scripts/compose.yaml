@@ -1,0 +1,28 @@
+services:
+  sim:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        LOCAL_UID: ${LOCAL_UID:-1000}
+        LOCAL_GID: ${LOCAL_GID:-1000}
+    image: sim_image:dev
+    container_name: sim_container
+    network_mode: host
+    environment:
+      DISPLAY: ${DISPLAY:-:0}
+      QT_X11_NO_MITSHM: "1"
+      QT_QPA_PLATFORM: xcb # Qt6 on X11, not Wayland
+    volumes:
+      - ..:/workspace
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # Named volume over the build dir so PX4 build artifacts (baked into the
+      # image, or produced by rebuilds inside the container) survive
+      # `dev.sh down` / `dev.sh up` without needing a full image rebuild.
+      - px4-build:/opt/PX4-Autopilot/build
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+
+volumes:
+  px4-build:

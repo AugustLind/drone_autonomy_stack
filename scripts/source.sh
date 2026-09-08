@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
-source /opt/ros/jazzy/setup.bash 
+source /opt/ros/jazzy/setup.bash
 source /opt/micro_xrce_dds_agent_ws/install/setup.bash
 source /opt/px4_msgs_ws/install/setup.bash
 

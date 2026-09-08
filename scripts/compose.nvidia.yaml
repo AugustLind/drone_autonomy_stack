@@ -1,0 +1,22 @@
+services:
+  sim:
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+      LOCAL_VIDEO_GID: ${LOCAL_VIDEO_GID:-44}
+      LOCAL_RENDER_GID: ${LOCAL_RENDER_GID:-109}
+    group_add:
+      - ${LOCAL_VIDEO_GID:-44}
+      - ${LOCAL_RENDER_GID:-109}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: 1
+    # Some NVIDIA driver/toolkit combinations need `privileged: true` for the
+    # container to see the GPU device nodes. Uncomment if `dev.sh shell` then
+    # `nvidia-smi` fails inside the container despite this overlay being active.
+    # privileged: true

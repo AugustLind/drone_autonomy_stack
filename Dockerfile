@@ -129,6 +129,11 @@ RUN git clone --branch "${PX4_VERSION}" --depth 1 --recurse-submodules \
 RUN pip3 install --no-cache-dir \
     -r "${PX4_AUTOPILOT_DIR}/Tools/setup/requirements.txt"
 
+# Build the gz_x500 SITL target now so `make px4_sitl gz_x500` at container
+# runtime only has to launch it, not compile from scratch.
+RUN cd "${PX4_AUTOPILOT_DIR}" \
+    && make px4_sitl_default
+
 # Micro XRCE-DDS Agent
 RUN mkdir -p /opt/micro_xrce_dds_agent_ws/src \
     && git clone --branch "${MICRO_XRCE_DDS_AGENT_VERSION}" --depth 1 --recurse-submodules \
