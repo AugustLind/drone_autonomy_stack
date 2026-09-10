@@ -17,6 +17,10 @@ BASE_COMPOSE="${REPO_ROOT}/scripts/compose.yaml"
 
 export LOCAL_UID="${LOCAL_UID:-$(id -u)}"
 export LOCAL_GID="${LOCAL_GID:-$(id -g)}"
+# Note: intentionally not named USERNAME - many shells/systems already
+# export that as the host login name, which would collide with the
+# in-container dev user name used below.
+CONTAINER_USERNAME="developer"
 
 usage() {
     cat <<EOF
@@ -101,10 +105,10 @@ case "${1:-}" in
         "${compose[@]}" up -d
         ;;
     shell)
-        "${compose[@]}" exec sim bash --rcfile /workspace/scripts/bashrc -i
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash --rcfile /workspace/scripts/bashrc -i
         ;;
     sim)
-        "${compose[@]}" exec --env HEADLESS="${HEADLESS:-1}" sim /workspace/scripts/sim_launch.sh
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" --env HEADLESS="${HEADLESS:-1}" sim /workspace/scripts/sim_launch.sh
         ;;
     gpu)
         echo "$gpu_mode"
