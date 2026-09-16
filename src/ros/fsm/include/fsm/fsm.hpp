@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <px4_msgs/msg/offboard_control_mode.hpp>
 #include <px4_msgs/msg/trajectory_setpoint.hpp>
 #include <px4_msgs/msg/vehicle_command.hpp>
@@ -9,7 +10,7 @@
 #include "navigator/lawnmower.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-enum class State { DISARMED, ARMING, TAKEOFF, SEARCH, LANDING };
+enum class State : std::uint8_t { DISARMED, ARMING, TAKEOFF, SEARCH, LANDING };
 
 class FSM : public rclcpp::Node {
 public:
@@ -30,11 +31,11 @@ private:
   void handle_state_search();
   void handle_state_land();
 
-  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg);
-  void vehicle_local_position_callback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg);
+  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr &msg);
+  void vehicle_local_position_callback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr &msg);
 
   // Shared variables
-  State current_state_;
+  State current_state_{State::DISARMED};
   uint8_t arming_state_{px4_msgs::msg::VehicleStatus::ARMING_STATE_DISARMED};
   uint8_t nav_state_{px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_MANUAL};
   float current_x_{0.0f};

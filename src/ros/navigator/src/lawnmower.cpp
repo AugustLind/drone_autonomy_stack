@@ -11,7 +11,9 @@ std::vector<Waypoint> generate_lawnmower(const Area &area, double swath_width, d
   double total_height = std::abs(top_left.y - bottom_left.y);
 
   int num_rows = static_cast<int>(std::ceil(total_height / swath_width));
-  if (num_rows < 2) num_rows = 2;
+  if (num_rows < 2) {
+    num_rows = 2;
+  }
 
   for (int i = 0; i < num_rows; i++) {
     double t = static_cast<double>(i) / (num_rows - 1);

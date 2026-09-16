@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-FSM::FSM() : Node("fsm_node"), current_state_(State::DISARMED) {
+FSM::FSM() : Node("fsm_node") {
   cmd_pub_ = this->create_publisher<px4_msgs::msg::VehicleCommand>("/fmu/in/vehicle_command", 10);
   offboard_control_mode_pub_ = this->create_publisher<px4_msgs::msg::OffboardControlMode>(
       "/fmu/in/offboard_control_mode", 10);
@@ -60,13 +60,13 @@ void FSM::publish_vehicle_command(
   cmd_pub_->publish(msg);
 }
 
-void FSM::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg) {
+void FSM::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr &msg) {
   arming_state_ = msg->arming_state;
   nav_state_ = msg->nav_state;
 }
 
 void FSM::vehicle_local_position_callback(
-    const px4_msgs::msg::VehicleLocalPosition::SharedPtr msg) {
+    const px4_msgs::msg::VehicleLocalPosition::SharedPtr &msg) {
   current_x_ = msg->x;
   current_y_ = msg->y;
   current_altitude_ = msg->z;
