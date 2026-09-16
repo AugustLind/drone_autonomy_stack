@@ -17,5 +17,4 @@ struct Waypoint {
   double z{0.0};
 };
 
-std::vector<Waypoint> generate_lawnmower(const Area &area, double swath_width,
-                                         double altitude);
+std::vector<Waypoint> generate_lawnmower(const Area &area, double swath_width, double altitude);
