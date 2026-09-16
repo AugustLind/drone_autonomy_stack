@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(px4_msgs REQUIRED)
+find_package(navigator REQUIRED)
 
 add_executable(fsm_node
   src/main.cpp
@@ -16,7 +17,7 @@ add_executable(fsm_node
   src/states/state_disarm.cpp
   src/states/state_arming.cpp
   src/states/state_takeoff.cpp
-  src/states/state_loiter.cpp
+  src/states/state_search.cpp
   src/states/state_land.cpp
 )
 
@@ -25,7 +26,7 @@ target_include_directories(fsm_node PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-ament_target_dependencies(fsm_node rclcpp px4_msgs)
+ament_target_dependencies(fsm_node rclcpp px4_msgs navigator)
 
 install(TARGETS fsm_node
   DESTINATION lib/${PROJECT_NAME}
