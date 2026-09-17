@@ -60,13 +60,13 @@ void FSM::publish_vehicle_command(
   cmd_pub_->publish(msg);
 }
 
-void FSM::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr &msg) {
+void FSM::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr &msg) {
   arming_state_ = msg->arming_state;
   nav_state_ = msg->nav_state;
 }
 
 void FSM::vehicle_local_position_callback(
-    const px4_msgs::msg::VehicleLocalPosition::SharedPtr &msg) {
+    const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr &msg) {
   current_x_ = msg->x;
   current_y_ = msg->y;
   current_altitude_ = msg->z;

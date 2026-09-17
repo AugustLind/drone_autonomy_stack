@@ -19,12 +19,12 @@ std::vector<Waypoint> generate_lawnmower(const Area &area, double swath_width, d
     double t = static_cast<double>(i) / (num_rows - 1);
 
     Waypoint left_pt = {
-        top_left.x + t * (bottom_left.x - top_left.x),
-        top_left.y + t * (bottom_left.y - top_left.y), altitude};
+        bottom_left.x + t * (top_left.x - bottom_left.x),
+        bottom_left.y + t * (top_left.y - bottom_left.y), altitude};
 
     Waypoint right_pt = {
-        top_right.x + t * (bottom_right.x - top_right.x),
-        top_right.y + t * (bottom_right.y - top_right.y), altitude};
+        bottom_right.x + t * (top_right.x - bottom_right.x),
+        bottom_right.y + t * (top_right.y - bottom_right.y), altitude};
 
     if (i % 2 == 0) {
       path.push_back(left_pt);

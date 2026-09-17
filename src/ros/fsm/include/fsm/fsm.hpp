@@ -31,8 +31,8 @@ private:
   void handle_state_search();
   void handle_state_land();
 
-  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr &msg);
-  void vehicle_local_position_callback(const px4_msgs::msg::VehicleLocalPosition::SharedPtr &msg);
+  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr &msg);
+  void vehicle_local_position_callback(const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr &msg);
 
   // Shared variables
   State current_state_{State::DISARMED};
