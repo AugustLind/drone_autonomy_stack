@@ -22,7 +22,7 @@ void FSM::handle_state_search() {
     return;
   }
 
-  const Waypoint &target = search_path_[search_waypoint_idx_];
+  const Waypoint& target = search_path_[search_waypoint_idx_];
   publish_trajectory_setpoint(target);
 
   if (nav_state_ != px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD) {

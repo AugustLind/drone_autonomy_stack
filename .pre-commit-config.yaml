@@ -1,5 +1,5 @@
 # Skip colcon output and vendored/third-party packages (adjust to your repo)
-exclude: ^(build|install|log)/|^
+exclude: ^(build|install|log)/
 
 repos:
   # General file hygiene
@@ -37,9 +37,3 @@ repos:
     rev: v0.6.13
     hooks:
       - id: cmake-format
-
-  # Spelling in code and comments
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.3
-    hooks:
-      - id: codespell

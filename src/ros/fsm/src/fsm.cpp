@@ -63,13 +63,13 @@ void FSM::publish_vehicle_command(
   cmd_pub_->publish(msg);
 }
 
-void FSM::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr &msg) {
+void FSM::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr& msg) {
   arming_state_ = msg->arming_state;
   nav_state_ = msg->nav_state;
 }
 
 void FSM::vehicle_local_position_callback(
-    const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr &msg) {
+    const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr& msg) {
   current_x_ = msg->x;
   current_y_ = msg->y;
   current_altitude_ = msg->z;
@@ -83,7 +83,7 @@ void FSM::publish_offboard_control_mode() {
   offboard_control_mode_pub_->publish(msg);
 }
 
-void FSM::publish_trajectory_setpoint(const Waypoint &target) {
+void FSM::publish_trajectory_setpoint(const Waypoint& target) {
   px4_msgs::msg::TrajectorySetpoint msg{};
   msg.position = {
       static_cast<float>(target.x), static_cast<float>(target.y), static_cast<float>(-target.z)};
@@ -91,7 +91,7 @@ void FSM::publish_trajectory_setpoint(const Waypoint &target) {
   trajectory_setpoint_pub_->publish(msg);
 }
 
-bool FSM::reached_waypoint(const Waypoint &target) const {
+bool FSM::reached_waypoint(const Waypoint& target) const {
   constexpr float kAcceptanceRadius = 1.5f;
   float dx = current_x_ - static_cast<float>(target.x);
   float dy = current_y_ - static_cast<float>(target.y);

@@ -22,8 +22,8 @@ private:
       uint16_t command, float param1 = 0.0f, float param2 = 0.0f, float param4 = 0.0f,
       float param5 = 0.0f, float param6 = 0.0f, float param7 = 0.0f);
   void publish_offboard_control_mode();
-  void publish_trajectory_setpoint(const Waypoint &target);
-  bool reached_waypoint(const Waypoint &target) const;
+  void publish_trajectory_setpoint(const Waypoint& target);
+  bool reached_waypoint(const Waypoint& target) const;
 
   void handle_state_disarmed();
   void handle_state_arming();
@@ -32,9 +32,9 @@ private:
   void handle_state_return();
   void handle_state_land();
 
-  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr &msg);
+  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr& msg);
   void vehicle_local_position_callback(
-      const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr &msg);
+      const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr& msg);
 
   // Shared variables
   State current_state_{State::DISARMED};

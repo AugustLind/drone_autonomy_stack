@@ -1,6 +1,6 @@
 #include "navigator/lawnmower.hpp"
 
-std::vector<Waypoint> generate_lawnmower(const Area &area, double swath_width, double altitude) {
+std::vector<Waypoint> generate_lawnmower(const Area& area, double swath_width, double altitude) {
   std::vector<Waypoint> path;
 
   Point2D bottom_left = area.corners.at(0);

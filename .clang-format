@@ -12,4 +12,3 @@ BraceWrapping:
   AfterFunction: true
   AfterNamespace: true
   AfterStruct: true
-
