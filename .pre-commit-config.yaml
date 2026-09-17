@@ -1,0 +1,45 @@
+# Skip colcon output and vendored/third-party packages (adjust to your repo)
+exclude: ^(build|install|log)/|^
+
+repos:
+  # General file hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-xml            # package.xml, launch files
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # C++ formatting (uses .clang-format in repo root)
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v23.1.1
+    hooks:
+      - id: clang-format
+        types_or: [c++, c]
+
+  # Python lint + format (launch files, scripts)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.8
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # CMakeLists.txt formatting
+  - repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
+    hooks:
+      - id: cmake-format
+
+  # Spelling in code and comments
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
+      - id: codespell
