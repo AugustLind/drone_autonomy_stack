@@ -20,6 +20,8 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
+export PX4_PARAM_COM_RC_IN_MODE=4
+
 MicroXRCEAgent udp4 -p "${MICRO_XRCE_AGENT_PORT}" &
 pids+=("$!")
 
