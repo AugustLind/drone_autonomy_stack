@@ -34,6 +34,9 @@ void FSM::fsm_loop() {
     case State::SEARCH:
       handle_state_search();
       break;
+    case State::RETURN:
+      handle_state_return();
+      break;
     case State::LANDING:
       handle_state_land();
       break;

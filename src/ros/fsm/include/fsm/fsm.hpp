@@ -10,7 +10,7 @@
 #include "navigator/lawnmower.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-enum class State : std::uint8_t { DISARMED, ARMING, TAKEOFF, SEARCH, LANDING };
+enum class State : std::uint8_t { DISARMED, ARMING, TAKEOFF, SEARCH, RETURN, LANDING };
 
 class FSM : public rclcpp::Node {
 public:
@@ -29,10 +29,12 @@ private:
   void handle_state_arming();
   void handle_state_takeoff();
   void handle_state_search();
+  void handle_state_return();
   void handle_state_land();
 
   void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::ConstSharedPtr &msg);
-  void vehicle_local_position_callback(const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr &msg);
+  void vehicle_local_position_callback(
+      const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr &msg);
 
   // Shared variables
   State current_state_{State::DISARMED};

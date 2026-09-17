@@ -3,10 +3,10 @@
 void FSM::handle_state_search() {
   if (search_path_.empty()) {
     Area area;
-    area.corners.push_back({0.0, 0.0});     // bottom_left
-    area.corners.push_back({50.0, 0.0});    // bottom_right
-    area.corners.push_back({0.0, 100.0});   // top_left
-    area.corners.push_back({50.0, 100.0});  // top_right
+    area.corners.push_back({0.0, 0.0});    // bottom_left
+    area.corners.push_back({20.0, 0.0});   // bottom_right
+    area.corners.push_back({0.0, 50.0});   // top_left
+    area.corners.push_back({20.0, 50.0});  // top_right
 
     search_path_ = generate_lawnmower(area, 5.0, 10.0);
     search_waypoint_idx_ = 0;
@@ -16,8 +16,8 @@ void FSM::handle_state_search() {
   publish_offboard_control_mode();
 
   if (search_waypoint_idx_ >= search_path_.size()) {
-    RCLCPP_INFO(this->get_logger(), "Search complete. Landing.");
-    current_state_ = State::LANDING;
+    RCLCPP_INFO(this->get_logger(), "Search complete. Returning.");
+    current_state_ = State::RETURN;
     search_path_.clear();
     return;
   }

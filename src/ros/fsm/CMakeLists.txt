@@ -18,6 +18,7 @@ add_executable(fsm_node
   src/states/state_arming.cpp
   src/states/state_takeoff.cpp
   src/states/state_search.cpp
+  src/states/state_return.cpp
   src/states/state_land.cpp
 )
 
