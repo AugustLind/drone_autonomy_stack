@@ -1,0 +1,6 @@
+# colcon defaults, picked up via COLCON_DEFAULTS_FILE (set in scripts/container/source.sh).
+# Passing --cmake-args on the command line replaces these cmake-args, not appends.
+build:
+  symlink-install: true
+  cmake-args:
+    - -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  # needed by scripts/clang/clang_tidy.sh

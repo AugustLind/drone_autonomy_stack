@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 #
-# Build, start, and launch the sim_image dev container via Docker Compose.
+# Build, start, and use the sim_image dev container via Docker Compose.
 #
 # Usage:
-#   ./scripts/dev.sh build   # build the sim image
-#   ./scripts/dev.sh up      # create/start sim_container, repo bind-mounted at /workspace
-#   ./scripts/dev.sh shell   # open a shell in sim_container
-#   ./scripts/dev.sh sim     # run scripts/container/sim_launch.sh inside sim_container
-#   ./scripts/dev.sh gpu     # print the detected GPU mode (nvidia|dri|none)
-#   ./scripts/dev.sh down    # stop and remove sim_container
+#   ./stack image    # build the Docker image
+#   ./stack up       # create/start sim_container, repo bind-mounted at /workspace
+#   ./stack shell    # open a shell in sim_container
+#   ./stack sim      # run PX4 SITL + Gazebo + Micro XRCE-DDS Agent in sim_container
+#   ./stack build    # colcon build the workspace in sim_container
+#   ./stack lint     # run clang-tidy in sim_container
+#   ./stack format   # run the pre-commit clang-format hook on all files
+#   ./stack gpu      # print the detected GPU mode (nvidia|dri|none)
+#   ./stack down     # stop and remove sim_container
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_COMPOSE="${REPO_ROOT}/config/compose.yaml"
 
 export LOCAL_UID="${LOCAL_UID:-$(id -u)}"
@@ -24,16 +27,21 @@ CONTAINER_USERNAME="developer"
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") <build|up|shell|sim|gpu|down>
+Usage: $(basename "$0") <image|up|shell|sim|build|lint|format|gpu|down>
 
-  build  build the sim image
-  up     create (or resume) sim_container, bind-mounting the repo at /workspace,
-         and grant it local X11 access (xhost +local:docker)
-  shell  open an interactive shell in sim_container
-  sim    run scripts/container/sim_launch.sh inside sim_container; HEADLESS=0 for a GUI,
-         e.g. HEADLESS=0 ./scripts/dev.sh sim
-  gpu    print the detected GPU mode (nvidia|dri|none) and exit
-  down   stop and remove sim_container
+  image   build the Docker image (slow; only after Dockerfile changes)
+  up      create (or resume) sim_container, bind-mounting the repo at /workspace,
+          and grant it local X11 access (xhost +local:docker)
+  shell   open an interactive shell in sim_container
+  sim     run PX4 SITL + Gazebo + Micro XRCE-DDS Agent in sim_container;
+          HEADLESS=0 for the Gazebo GUI, e.g. HEADLESS=0 ./stack sim
+  build   colcon build the workspace in sim_container; extra args are passed
+          through, e.g. ./stack build --packages-select fsm
+  lint    run clang-tidy over src/ in sim_container (needs ./stack build first)
+  format  run the pre-commit clang-format hook on all files, on the host, so the
+          clang-format version matches the commit hook
+  gpu     print the detected GPU mode (nvidia|dri|none) and exit
+  down    stop and remove sim_container
 
 GPU acceleration is auto-detected: nvidia (if nvidia-smi works and Docker
 exposes the NVIDIA runtime), else dri (if /dev/dri exists, for Intel/AMD),
@@ -92,7 +100,7 @@ case "$gpu_mode" in
 esac
 
 case "${1:-}" in
-    build)
+    image)
         "${compose[@]}" build
         ;;
     up)
@@ -109,6 +117,18 @@ case "${1:-}" in
         ;;
     sim)
         "${compose[@]}" exec --user "$CONTAINER_USERNAME" --env HEADLESS="${HEADLESS:-1}" sim /workspace/scripts/container/sim_launch.sh
+        ;;
+    build)
+        shift
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash -c \
+            'source /workspace/scripts/container/source.sh && colcon build "$@"' colcon "$@"
+        ;;
+    lint)
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash -c \
+            'source /workspace/scripts/container/source.sh && /workspace/scripts/clang/clang_tidy.sh'
+        ;;
+    format)
+        pre-commit run clang-format --all-files
         ;;
     gpu)
         echo "$gpu_mode"

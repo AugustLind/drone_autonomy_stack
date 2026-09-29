@@ -9,32 +9,36 @@ A base frame for testing your own drone autonomy code against PX4 SITL + Gazebo.
 
 ## Running the sim
 
-Build, start, and run the sim via `./scripts/dev.sh`, a Docker Compose wrapper (repo is bind-mounted at `/workspace`):
+Build, start, and run the sim via `./stack`, a Docker Compose wrapper (repo is bind-mounted at `/workspace`):
 
 ```
-./scripts/dev.sh build   # build the sim image
-./scripts/dev.sh up      # create/start sim_container, with GPU accel auto-detected
-./scripts/dev.sh shell   # open a shell in sim_container
-./scripts/dev.sh sim     # run PX4 SITL + Gazebo + Micro XRCE-DDS Agent inside sim_container
-./scripts/dev.sh gpu     # print the detected GPU mode (nvidia|dri|none)
-./scripts/dev.sh down    # stop and remove sim_container
+./stack image    # build the Docker image (slow; only after Dockerfile changes)
+./stack up       # create/start sim_container, with GPU accel auto-detected
+./stack shell    # open a shell in sim_container
+./stack sim      # run PX4 SITL + Gazebo + Micro XRCE-DDS Agent inside sim_container
+./stack build    # colcon build the workspace inside sim_container
+./stack lint     # run clang-tidy inside sim_container
+./stack format   # run the pre-commit clang-format hook on all files
+./stack gpu      # print the detected GPU mode (nvidia|dri|none)
+./stack down     # stop and remove sim_container
 ```
 
 For the Gazebo GUI (rather than headless), run:
 
 ```
-HEADLESS=0 ./scripts/dev.sh sim
+HEADLESS=0 ./stack sim
 ```
 
-The vehicle model, Micro XRCE-DDS Agent port and PX4 parameters are set in [`config/sim.env`](config/sim.env). Add a PX4 parameter as `PX4_PARAM_<NAME>=<value>`. Changes apply on the next `dev.sh sim`, no rebuild or restart needed.
+The vehicle model, Micro XRCE-DDS Agent port and PX4 parameters are set in [`config/sim.env`](config/sim.env). Add a PX4 parameter as `PX4_PARAM_<NAME>=<value>`. Changes apply on the next `./stack sim`, no rebuild or restart needed.
 
-GPU acceleration is auto-detected, nvidia (via the NVIDIA Container Toolkit), dri (Intel/AMD, via `/dev/dri`), or software rendering as a fallback. Override with e.g. `SIM_GPU=dri ./scripts/dev.sh up`. GPU access is assigned when the container is created, so run `dev.sh down` then `dev.sh up` again after changing modes.
+GPU acceleration is auto-detected, nvidia (via the NVIDIA Container Toolkit), dri (Intel/AMD, via `/dev/dri`), or software rendering as a fallback. Override with e.g. `SIM_GPU=dri ./stack up`. GPU access is assigned when the container is created, so run `./stack down` then `./stack up` again after changing modes.
 
-Once the sim is running, build and run the ROS packages inside the container:
+Once the sim is running, build the ROS packages and run the FSM inside the container:
 
 ```
-./scripts/dev.sh shell
-colcon build --packages-select navigator fsm
-source install/setup.sh
+./stack build
+./stack shell
 ros2 run fsm fsm_node
 ```
+
+Builds use [`config/colcon_defaults.yaml`](config/colcon_defaults.yaml) (symlink install, and `compile_commands.json` for `./stack lint`).

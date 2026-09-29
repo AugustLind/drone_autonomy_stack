@@ -32,7 +32,7 @@ repos:
         args: [--fix]
       - id: ruff-format
 
-  # Shell script linting (dev.sh, container and clang scripts)
+  # Shell script linting (./stack, container and clang scripts)
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1
     hooks:
