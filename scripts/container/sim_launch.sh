@@ -4,10 +4,15 @@ source /workspace/scripts/container/source.sh
 
 set -euo pipefail
 
+# Sim settings and PX4 params; exported so PX4 sees the PX4_PARAM_* vars.
+set -a
+source /workspace/config/sim.env
+set +a
+
 PX4_AUTOPILOT_DIR="${PX4_AUTOPILOT_DIR:-/opt/PX4-Autopilot}"
-PX4_MODEL="${PX4_MODEL:-gz_x500}"
-MICRO_XRCE_AGENT_PORT="${MICRO_XRCE_AGENT_PORT:-8888}"
 HEADLESS="${HEADLESS:-1}"
+: "${PX4_MODEL:?PX4_MODEL must be set in config/sim.env}"
+: "${MICRO_XRCE_AGENT_PORT:?MICRO_XRCE_AGENT_PORT must be set in config/sim.env}"
 
 pids=()
 
@@ -19,8 +24,6 @@ cleanup() {
     fi
 }
 trap cleanup INT TERM EXIT
-
-export PX4_PARAM_COM_RC_IN_MODE=4
 
 MicroXRCEAgent udp4 -p "${MICRO_XRCE_AGENT_PORT}" &
 pids+=("$!")

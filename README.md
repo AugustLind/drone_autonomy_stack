@@ -26,6 +26,8 @@ For the Gazebo GUI (rather than headless), run:
 HEADLESS=0 ./scripts/dev.sh sim
 ```
 
+The vehicle model, Micro XRCE-DDS Agent port and PX4 parameters are set in [`config/sim.env`](config/sim.env). Add a PX4 parameter as `PX4_PARAM_<NAME>=<value>`. Changes apply on the next `dev.sh sim`, no rebuild or restart needed.
+
 GPU acceleration is auto-detected, nvidia (via the NVIDIA Container Toolkit), dri (Intel/AMD, via `/dev/dri`), or software rendering as a fallback. Override with e.g. `SIM_GPU=dri ./scripts/dev.sh up`. GPU access is assigned when the container is created, so run `dev.sh down` then `dev.sh up` again after changing modes.
 
 Once the sim is running, build and run the ROS packages inside the container:
