@@ -6,14 +6,14 @@
 #   ./scripts/dev.sh build   # build the sim image
 #   ./scripts/dev.sh up      # create/start sim_container, repo bind-mounted at /workspace
 #   ./scripts/dev.sh shell   # open a shell in sim_container
-#   ./scripts/dev.sh sim     # run scripts/sim_launch.sh inside sim_container
+#   ./scripts/dev.sh sim     # run scripts/container/sim_launch.sh inside sim_container
 #   ./scripts/dev.sh gpu     # print the detected GPU mode (nvidia|dri|none)
 #   ./scripts/dev.sh down    # stop and remove sim_container
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BASE_COMPOSE="${REPO_ROOT}/scripts/compose.yaml"
+BASE_COMPOSE="${REPO_ROOT}/config/compose.yaml"
 
 export LOCAL_UID="${LOCAL_UID:-$(id -u)}"
 export LOCAL_GID="${LOCAL_GID:-$(id -g)}"
@@ -30,7 +30,7 @@ Usage: $(basename "$0") <build|up|shell|sim|gpu|down>
   up     create (or resume) sim_container, bind-mounting the repo at /workspace,
          and grant it local X11 access (xhost +local:docker)
   shell  open an interactive shell in sim_container
-  sim    run scripts/sim_launch.sh inside sim_container; HEADLESS=0 for a GUI,
+  sim    run scripts/container/sim_launch.sh inside sim_container; HEADLESS=0 for a GUI,
          e.g. HEADLESS=0 ./scripts/dev.sh sim
   gpu    print the detected GPU mode (nvidia|dri|none) and exit
   down   stop and remove sim_container
@@ -82,12 +82,12 @@ case "$gpu_mode" in
     nvidia)
         export LOCAL_VIDEO_GID="${LOCAL_VIDEO_GID:-$(host_group_gid video 44)}"
         export LOCAL_RENDER_GID="${LOCAL_RENDER_GID:-$(host_group_gid render 109)}"
-        compose+=(-f "${REPO_ROOT}/scripts/compose.nvidia.yaml")
+        compose+=(-f "${REPO_ROOT}/config/compose.nvidia.yaml")
         ;;
     dri)
         export LOCAL_VIDEO_GID="${LOCAL_VIDEO_GID:-$(host_group_gid video 44)}"
         export LOCAL_RENDER_GID="${LOCAL_RENDER_GID:-$(host_group_gid render 109)}"
-        compose+=(-f "${REPO_ROOT}/scripts/compose.dri.yaml")
+        compose+=(-f "${REPO_ROOT}/config/compose.dri.yaml")
         ;;
 esac
 
@@ -105,10 +105,10 @@ case "${1:-}" in
         "${compose[@]}" up -d
         ;;
     shell)
-        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash --rcfile /workspace/scripts/bashrc -i
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash -i
         ;;
     sim)
-        "${compose[@]}" exec --user "$CONTAINER_USERNAME" --env HEADLESS="${HEADLESS:-1}" sim /workspace/scripts/sim_launch.sh
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" --env HEADLESS="${HEADLESS:-1}" sim /workspace/scripts/container/sim_launch.sh
         ;;
     gpu)
         echo "$gpu_mode"

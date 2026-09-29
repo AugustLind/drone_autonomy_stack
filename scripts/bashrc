@@ -1,3 +1,0 @@
-if [[ -f /workspace/scripts/source.sh ]]; then
-    source /workspace/scripts/source.sh
-fi

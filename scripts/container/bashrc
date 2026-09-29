@@ -1,0 +1,3 @@
+if [[ -f /workspace/scripts/container/source.sh ]]; then
+    source /workspace/scripts/container/source.sh
+fi

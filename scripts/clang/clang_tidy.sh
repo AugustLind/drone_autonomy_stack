@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
+
 SRC="$(pwd)/src"
 
 for db in build/*/compile_commands.json; do

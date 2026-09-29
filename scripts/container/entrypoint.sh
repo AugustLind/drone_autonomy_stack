@@ -24,7 +24,7 @@ chown -R "${LOCAL_UID}:${LOCAL_GID}" "/home/${USERNAME}"
 mkdir -p /opt/PX4-Autopilot/build
 chown "${USERNAME}:${USERNAME}" /opt/PX4-Autopilot/build
 
-# GPU passthrough (scripts/compose.dri.yaml / compose.nvidia.yaml) bind-mounts
+# GPU passthrough (config/compose.dri.yaml / compose.nvidia.yaml) bind-mounts
 # /dev/dri using the host's video/render group IDs, which won't already exist
 # as named groups in the image - create/match them and add the dev user so
 # Gazebo can actually use the device nodes instead of falling back to llvmpipe.

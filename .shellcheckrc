@@ -1,0 +1,2 @@
+# Scripts source files that only exist inside the container (/opt/ros, /workspace).
+disable=SC1091

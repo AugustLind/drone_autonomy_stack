@@ -32,6 +32,12 @@ repos:
         args: [--fix]
       - id: ruff-format
 
+  # Shell script linting (dev.sh, container and clang scripts)
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+
   # CMakeLists.txt formatting
   - repo: https://github.com/cheshirekow/cmake-format-precommit
     rev: v0.6.13

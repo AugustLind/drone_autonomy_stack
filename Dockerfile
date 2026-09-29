@@ -115,9 +115,6 @@ RUN groupadd --non-unique --gid "${LOCAL_GID}" "${USERNAME}" \
 RUN mkdir -p "${PX4_AUTOPILOT_DIR}" /opt/micro_xrce_dds_agent_ws /opt/px4_msgs_ws \
     && chown -R "${USERNAME}:${USERNAME}" "${PX4_AUTOPILOT_DIR}" /opt/micro_xrce_dds_agent_ws /opt/px4_msgs_ws
 
-COPY scripts/bashrc /home/${USERNAME}/.bashrc
-RUN chown "${USERNAME}:${USERNAME}" /home/${USERNAME}/.bashrc
-
 USER ${USERNAME}
 
 RUN git config --global http.version HTTP/1.1
@@ -155,7 +152,12 @@ RUN mkdir -p /opt/px4_msgs_ws/src \
 
 # Setup entrypoint
 USER root
-COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# The real bashrc lives in the bind-mounted repo, so editing it needs no rebuild.
+# Kept after the PX4 build so changes here don't invalidate that cache.
+RUN echo '[[ -f /workspace/scripts/container/bashrc ]] && source /workspace/scripts/container/bashrc' \
+    >/home/${USERNAME}/.bashrc
+COPY scripts/container/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENV HOME=/home/${USERNAME}
