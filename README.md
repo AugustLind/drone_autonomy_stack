@@ -1,11 +1,11 @@
 # drone_autonomy_stack
 
-A base frame for testing your own drone autonomy code against PX4 SITL + Gazebo. It ships a simple FSM for arm → takeoff → search → land, and a coverage path planner used by the search state.
+A base frame for testing your own drone autonomy code against PX4 SITL + Gazebo. It ships a simple FSM for arm → takeoff → search → land, and a coverage path planner and velocity path follower used by the search state.
 
 ## Packages
 
 - [`src/ros/fsm`](src/ros/fsm/README.md) — the flight state machine node that talks to PX4.
-- [`src/ros/navigator`](src/ros/navigator/README.md) — lawnmower coverage path generation used by the FSM's search state.
+- [`src/ros/navigator`](src/ros/navigator/README.md) — lawnmower coverage path generation and the velocity path follower used by the FSM's search state.
 
 ## Running the sim
 

@@ -8,7 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 
-add_library(navigator src/lawnmower.cpp)
+add_library(navigator src/lawnmower.cpp src/path_follower.cpp)
 
 target_include_directories(
   navigator PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

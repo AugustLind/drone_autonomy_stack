@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "navigator/lawnmower.hpp"
+#include "navigator/path_follower.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 enum class State : std::uint8_t { DISARMED, ARMING, TAKEOFF, SEARCH, RETURN, LANDING };
+enum class ControlMode : std::uint8_t { POSITION, VELOCITY };
 
 class FSM : public rclcpp::Node {
 public:
@@ -21,8 +23,10 @@ private:
   void publish_vehicle_command(
       uint16_t command, float param1 = 0.0f, float param2 = 0.0f, float param4 = 0.0f,
       float param5 = 0.0f, float param6 = 0.0f, float param7 = 0.0f);
-  void publish_offboard_control_mode();
+  void publish_offboard_control_mode(ControlMode mode = ControlMode::POSITION);
   void publish_trajectory_setpoint(const Waypoint& target);
+  void publish_velocity_setpoint(const VelocityCmd& cmd);
+  bool local_position_fresh() const;
   bool reached_waypoint(const Waypoint& target) const;
 
   void handle_state_disarmed();
@@ -44,6 +48,7 @@ private:
   float current_y_{0.0f};
   float current_altitude_{0.0f};
   float ref_alt_{0.0f};
+  rclcpp::Time last_local_position_time_;
   float target_takeoff_alt_{2.5f};
 
   // Search state

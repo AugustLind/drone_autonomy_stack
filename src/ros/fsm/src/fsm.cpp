@@ -1,6 +1,7 @@
 #include "fsm/fsm.hpp"
 
 #include <cmath>
+#include <limits>
 
 FSM::FSM() : Node("fsm_node") {
   cmd_pub_ = this->create_publisher<px4_msgs::msg::VehicleCommand>("/fmu/in/vehicle_command", 10);
@@ -74,11 +75,13 @@ void FSM::vehicle_local_position_callback(
   current_y_ = msg->y;
   current_altitude_ = msg->z;
   ref_alt_ = msg->ref_alt;
+  last_local_position_time_ = this->get_clock()->now();
 }
 
-void FSM::publish_offboard_control_mode() {
+void FSM::publish_offboard_control_mode(ControlMode mode) {
   px4_msgs::msg::OffboardControlMode msg{};
-  msg.position = true;
+  msg.position = mode == ControlMode::POSITION;
+  msg.velocity = mode == ControlMode::VELOCITY;
   msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
   offboard_control_mode_pub_->publish(msg);
 }
@@ -89,6 +92,24 @@ void FSM::publish_trajectory_setpoint(const Waypoint& target) {
       static_cast<float>(target.x), static_cast<float>(target.y), static_cast<float>(-target.z)};
   msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
   trajectory_setpoint_pub_->publish(msg);
+}
+
+void FSM::publish_velocity_setpoint(const VelocityCmd& cmd) {
+  constexpr float kNan = std::numeric_limits<float>::quiet_NaN();
+  px4_msgs::msg::TrajectorySetpoint msg{};
+  msg.position = {kNan, kNan, kNan};
+  msg.velocity = {cmd.vx, cmd.vy, cmd.vz};
+  msg.yaw = cmd.yaw;
+  msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
+  trajectory_setpoint_pub_->publish(msg);
+}
+
+bool FSM::local_position_fresh() const {
+  constexpr double kMaxAgeSec = 0.2;
+  if (last_local_position_time_.nanoseconds() == 0) {
+    return false;
+  }
+  return (this->get_clock()->now() - last_local_position_time_).seconds() < kMaxAgeSec;
 }
 
 bool FSM::reached_waypoint(const Waypoint& target) const {
