@@ -6,5 +6,6 @@ void FSM::handle_state_arming() {
   if (arming_state_ == px4_msgs::msg::VehicleStatus::ARMING_STATE_ARMED) {
     RCLCPP_INFO(this->get_logger(), "Armed! Moving to Takeoff.");
     current_state_ = State::TAKEOFF;
+    mission_pending_ = false;
   }
 }

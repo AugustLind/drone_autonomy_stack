@@ -1,0 +1,8 @@
+# Search area corners in local NED [m], z ignored.
+# Order: bottom_left, bottom_right, top_left, top_right
+geometry_msgs/Point[4] corners
+float64 swath_width  # spacing between lawnmower legs [m]
+float64 altitude     # search altitude above home, positive up [m]
+---
+bool accepted
+string message

@@ -4,14 +4,7 @@
 
 void FSM::handle_state_search() {
   if (search_path_.empty()) {
-    Area area;
-    area.corners.push_back({0.0, 0.0});    // bottom_left
-    area.corners.push_back({20.0, 0.0});   // bottom_right
-    area.corners.push_back({0.0, 50.0});   // top_left
-    area.corners.push_back({20.0, 50.0});  // top_right
-
-    search_path_ = generate_lawnmower(area, 5.0, 10.0);
-
+    search_path_ = generate_lawnmower(search_area_, search_swath_, mission_altitude_);
     search_path_.insert(
         search_path_.begin(), Waypoint{current_x_, current_y_, search_path_.front().z});
     search_waypoint_idx_ = 0;

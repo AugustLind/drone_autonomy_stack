@@ -1,7 +1,6 @@
 #include "fsm/fsm.hpp"
 
 void FSM::handle_state_disarmed() {
-  // TODO: gate this on a real arm trigger (service/topic) instead of arming immediately.
   const auto kDisarmSettleDuration = rclcpp::Duration::from_seconds(2.0);
 
   if (!disarm_settle_started_) {
@@ -15,7 +14,9 @@ void FSM::handle_state_disarmed() {
     return;
   }
 
-  RCLCPP_INFO(this->get_logger(), "Requesting arm.");
-  disarm_settle_started_ = false;
-  current_state_ = State::ARMING;
+  if (mission_pending_) {
+    RCLCPP_INFO(this->get_logger(), "Requesting arm.");
+    disarm_settle_started_ = false;
+    current_state_ = State::ARMING;
+  }
 }

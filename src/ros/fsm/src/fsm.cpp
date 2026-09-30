@@ -18,6 +18,10 @@ FSM::FSM() : Node("fsm_node") {
       "/fmu/out/vehicle_local_position_v1", qos,
       std::bind(&FSM::vehicle_local_position_callback, this, std::placeholders::_1));
 
+  start_search_srv_ = this->create_service<drone_interface::srv::StartSearch>(
+      "~/start_search",
+      std::bind(&FSM::start_search_callback, this, std::placeholders::_1, std::placeholders::_2));
+
   timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&FSM::fsm_loop, this));
 }
 
@@ -118,4 +122,32 @@ bool FSM::reached_waypoint(const Waypoint& target) const {
   float dy = current_y_ - static_cast<float>(target.y);
   float dz = current_altitude_ - static_cast<float>(-target.z);
   return std::sqrt(dx * dx + dy * dy + dz * dz) < kAcceptanceRadius;
+}
+
+void FSM::start_search_callback(
+    const std::shared_ptr<drone_interface::srv::StartSearch::Request> req,
+    std::shared_ptr<drone_interface::srv::StartSearch::Response> res) {
+  if (current_state_ != State::DISARMED || mission_pending_) {
+    res->accepted = false;
+    res->message = "Busy: mission already running or pending.";
+    return;
+  }
+
+  if (req->swath_width <= 0.0 || req->altitude <= 0.0) {
+    res->accepted = false;
+    res->message = "swath_width and altitude must be > 0.";
+    return;
+  }
+
+  search_area_.corners.clear();
+  for (const auto& c : req->corners) {
+    search_area_.corners.push_back({c.x, c.y});
+  }
+  search_swath_ = req->swath_width;
+  mission_altitude_ = req->altitude;
+  mission_pending_ = true;
+
+  res->accepted = true;
+  res->message = "Search mission accepted.";
+  RCLCPP_INFO(this->get_logger(), "Search mission accepted.");
 }

@@ -7,6 +7,7 @@
 #include <px4_msgs/msg/vehicle_status.hpp>
 #include <vector>
 
+#include "drone_interface/srv/start_search.hpp"
 #include "navigator/lawnmower.hpp"
 #include "navigator/path_follower.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -40,6 +41,9 @@ private:
   void vehicle_local_position_callback(
       const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr& msg);
 
+  void start_search_callback(
+      const std::shared_ptr<drone_interface::srv::StartSearch::Request> req,
+      std::shared_ptr<drone_interface::srv::StartSearch::Response> res);
   // Shared variables
   State current_state_{State::DISARMED};
   uint8_t arming_state_{px4_msgs::msg::VehicleStatus::ARMING_STATE_DISARMED};
@@ -49,14 +53,15 @@ private:
   float current_altitude_{0.0f};
   float ref_alt_{0.0f};
   rclcpp::Time last_local_position_time_;
-  float target_takeoff_alt_{2.5f};
+  bool mission_pending_{false};
+  Area search_area_;
+  double search_swath_{5.0};
+  double mission_altitude_{10.0};
 
   // Search state
   std::vector<Waypoint> search_path_;
   size_t search_waypoint_idx_{0};
 
-  // Disarmed state: settle briefly after landing before requesting arm
-  // again, so PX4's post-landing health checks have time to clear.
   bool disarm_settle_started_{false};
   rclcpp::Time disarm_settle_start_;
 
@@ -66,4 +71,6 @@ private:
   rclcpp::Publisher<px4_msgs::msg::TrajectorySetpoint>::SharedPtr trajectory_setpoint_pub_;
   rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_sub_;
   rclcpp::Subscription<px4_msgs::msg::VehicleLocalPosition>::SharedPtr vehicle_local_position_sub_;
+
+  rclcpp::Service<drone_interface::srv::StartSearch>::SharedPtr start_search_srv_;
 };
