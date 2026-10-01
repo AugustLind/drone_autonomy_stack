@@ -8,6 +8,7 @@
 #   ./stack shell    # open a shell in sim_container
 #   ./stack sim      # run PX4 SITL + Gazebo + Micro XRCE-DDS Agent in sim_container
 #   ./stack build    # colcon build the workspace in sim_container
+#   ./stack mission  # call the fsm start_search service in sim_container
 #   ./stack lint     # run clang-tidy in sim_container
 #   ./stack format   # run the pre-commit clang-format hook on all files
 #   ./stack gpu      # print the detected GPU mode (nvidia|dri|none)
@@ -27,7 +28,7 @@ CONTAINER_USERNAME="developer"
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") <image|up|shell|sim|build|lint|format|gpu|down>
+Usage: $(basename "$0") <image|up|shell|sim|build|mission|lint|format|gpu|down>
 
   image   build the Docker image (slow; only after Dockerfile changes)
   up      create (or resume) sim_container, bind-mounting the repo at /workspace,
@@ -37,6 +38,7 @@ Usage: $(basename "$0") <image|up|shell|sim|build|lint|format|gpu|down>
           HEADLESS=0 for the Gazebo GUI, e.g. HEADLESS=0 ./stack sim
   build   colcon build the workspace in sim_container; extra args are passed
           through, e.g. ./stack build --packages-select fsm
+  mission start the mission by calling /fsm_node/start_search in sim_container
   lint    run clang-tidy over src/ in sim_container (needs ./stack build first)
   format  run the pre-commit clang-format hook on all files, on the host, so the
           clang-format version matches the commit hook
@@ -122,6 +124,9 @@ case "${1:-}" in
         shift
         "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash -c \
             'source /workspace/scripts/container/source.sh && colcon build "$@"' colcon "$@"
+        ;;
+    mission)
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim /workspace/scripts/container/mission_launch.sh
         ;;
     lint)
         "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash -c \
