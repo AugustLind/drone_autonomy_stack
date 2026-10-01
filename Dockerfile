@@ -152,6 +152,11 @@ RUN mkdir -p /opt/px4_msgs_ws/src \
 # Setup entrypoint
 USER root
 
+# Cyclone DDS for ROS 2. Installed here so it doesn't invalidate the PX4 build cache.
+RUN apt-get update && apt-get install --yes ros-jazzy-rmw-cyclonedds-cpp \
+    && rm -rf /var/lib/apt/lists/*
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
 # The real bashrc lives in the bind-mounted repo, so editing it needs no rebuild.
 RUN echo '[[ -f /workspace/scripts/container/bashrc ]] && source /workspace/scripts/container/bashrc' \
     >/home/${USERNAME}/.bashrc

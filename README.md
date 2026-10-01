@@ -45,6 +45,8 @@ HEADLESS=0 ./stack sim
 
 The vehicle model, Micro XRCE-DDS Agent port and PX4 parameters are set in [`config/sim/sim.env`](config/sim/sim.env). Add a PX4 parameter as `PX4_PARAM_<NAME>=<value>`. Changes apply on the next `./stack sim`, no rebuild or restart needed.
 
+ROS 2 uses Cyclone DDS (`RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`, set in the `Dockerfile`). The Micro XRCE-DDS Agent uses Fast DDS internally and talks to the ROS 2 nodes over standard DDS.
+
 GPU acceleration is auto-detected, nvidia (via the NVIDIA Container Toolkit), dri (Intel/AMD, via `/dev/dri`), or software rendering as a fallback. Override with e.g. `SIM_GPU=dri ./stack up`. GPU access is assigned when the container is created, so run `./stack down` then `./stack up` again after changing modes.
 
 Once the sim is running, build the ROS packages, launch the stack, and start a mission (each in its own terminal):
