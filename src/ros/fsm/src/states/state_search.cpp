@@ -29,7 +29,8 @@ void FSM::handle_state_search() {
 
   const Waypoint& from = search_path_[search_waypoint_idx_];
   const Waypoint& to = search_path_[search_waypoint_idx_ + 1];
-  const VelocityCmd cmd = follow_segment(from, to, current_x_, current_y_, current_altitude_);
+  const VelocityCmd cmd =
+      follow_segment(from, to, current_x_, current_y_, current_altitude_, follower_params_);
   publish_velocity_setpoint(cmd);
 
   if (nav_state_ != px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD) {

@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-#
+
 source /workspace/scripts/container/source.sh
 
 set -euo pipefail
 
 # Sim settings and PX4 params; exported so PX4 sees the PX4_PARAM_* vars.
 set -a
-source /workspace/config/sim.env
+source /workspace/config/sim/sim.env
 set +a
 
 PX4_AUTOPILOT_DIR="${PX4_AUTOPILOT_DIR:-/opt/PX4-Autopilot}"
 HEADLESS="${HEADLESS:-1}"
-: "${PX4_MODEL:?PX4_MODEL must be set in config/sim.env}"
-: "${MICRO_XRCE_AGENT_PORT:?MICRO_XRCE_AGENT_PORT must be set in config/sim.env}"
+: "${PX4_MODEL:?PX4_MODEL must be set in config/sim/sim.env}"
+: "${MICRO_XRCE_AGENT_PORT:?MICRO_XRCE_AGENT_PORT must be set in config/sim/sim.env}"
 
 pids=()
 

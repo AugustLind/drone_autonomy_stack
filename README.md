@@ -29,7 +29,7 @@ For the Gazebo GUI (rather than headless), run:
 HEADLESS=0 ./stack sim
 ```
 
-The vehicle model, Micro XRCE-DDS Agent port and PX4 parameters are set in [`config/sim.env`](config/sim.env). Add a PX4 parameter as `PX4_PARAM_<NAME>=<value>`. Changes apply on the next `./stack sim`, no rebuild or restart needed.
+The vehicle model, Micro XRCE-DDS Agent port and PX4 parameters are set in [`config/sim/sim.env`](config/sim/sim.env). Add a PX4 parameter as `PX4_PARAM_<NAME>=<value>`. Changes apply on the next `./stack sim`, no rebuild or restart needed.
 
 GPU acceleration is auto-detected, nvidia (via the NVIDIA Container Toolkit), dri (Intel/AMD, via `/dev/dri`), or software rendering as a fallback. Override with e.g. `SIM_GPU=dri ./stack up`. GPU access is assigned when the container is created, so run `./stack down` then `./stack up` again after changing modes.
 
@@ -41,4 +41,4 @@ Once the sim is running, build the ROS packages and run the FSM inside the conta
 ros2 run fsm fsm_node
 ```
 
-Builds use [`config/colcon_defaults.yaml`](config/colcon_defaults.yaml) (symlink install, and `compile_commands.json` for `./stack lint`).
+Builds use [`config/colcon/colcon_defaults.yaml`](config/colcon/colcon_defaults.yaml) (symlink install, and `compile_commands.json` for `./stack lint`).

@@ -1,7 +1,7 @@
 #include "fsm/fsm.hpp"
 
 void FSM::handle_state_return() {
-  const Waypoint home = {0.0, 0.0, 10.0};
+  const Waypoint home = {0.0, 0.0, return_altitude_};
   publish_trajectory_setpoint(home);
 
   publish_offboard_control_mode();

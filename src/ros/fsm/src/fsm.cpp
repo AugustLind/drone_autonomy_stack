@@ -4,6 +4,8 @@
 #include <limits>
 
 FSM::FSM() : Node("fsm_node") {
+  load_parameters();
+
   cmd_pub_ = this->create_publisher<px4_msgs::msg::VehicleCommand>("/fmu/in/vehicle_command", 10);
   offboard_control_mode_pub_ = this->create_publisher<px4_msgs::msg::OffboardControlMode>(
       "/fmu/in/offboard_control_mode", 10);
@@ -22,7 +24,28 @@ FSM::FSM() : Node("fsm_node") {
       "~/start_search",
       std::bind(&FSM::start_search_callback, this, std::placeholders::_1, std::placeholders::_2));
 
-  timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&FSM::fsm_loop, this));
+  timer_ = this->create_wall_timer(
+      std::chrono::milliseconds(loop_period_ms_), std::bind(&FSM::fsm_loop, this));
+}
+
+void FSM::load_parameters() {
+  loop_period_ms_ = static_cast<int>(declare_parameter("loop_period_ms", loop_period_ms_));
+  disarm_settle_time_ = declare_parameter("disarm_settle_time", disarm_settle_time_);
+  acceptance_radius_ = declare_parameter("acceptance_radius", acceptance_radius_);
+  local_position_timeout_ = declare_parameter("local_position_timeout", local_position_timeout_);
+  return_altitude_ = declare_parameter("return_altitude", return_altitude_);
+
+  auto declare_follower = [this](const std::string& name, float& value) {
+    value = static_cast<float>(declare_parameter("follower." + name, static_cast<double>(value)));
+  };
+  declare_follower("cruise_speed", follower_params_.cruise_speed);
+  declare_follower("max_speed", follower_params_.max_speed);
+  declare_follower("max_vertical_speed", follower_params_.max_vertical_speed);
+  declare_follower("cross_track_gain", follower_params_.cross_track_gain);
+  declare_follower("altitude_gain", follower_params_.altitude_gain);
+  declare_follower("slowdown_dist", follower_params_.slowdown_dist);
+  declare_follower("min_speed_ratio", follower_params_.min_speed_ratio);
+  declare_follower("done_dist", follower_params_.done_dist);
 }
 
 void FSM::fsm_loop() {
@@ -109,19 +132,17 @@ void FSM::publish_velocity_setpoint(const VelocityCmd& cmd) {
 }
 
 bool FSM::local_position_fresh() const {
-  constexpr double kMaxAgeSec = 0.2;
   if (last_local_position_time_.nanoseconds() == 0) {
     return false;
   }
-  return (this->get_clock()->now() - last_local_position_time_).seconds() < kMaxAgeSec;
+  return (this->get_clock()->now() - last_local_position_time_).seconds() < local_position_timeout_;
 }
 
 bool FSM::reached_waypoint(const Waypoint& target) const {
-  constexpr float kAcceptanceRadius = 1.5f;
   float dx = current_x_ - static_cast<float>(target.x);
   float dy = current_y_ - static_cast<float>(target.y);
   float dz = current_altitude_ - static_cast<float>(-target.z);
-  return std::sqrt(dx * dx + dy * dy + dz * dz) < kAcceptanceRadius;
+  return std::sqrt(dx * dx + dy * dy + dz * dz) < acceptance_radius_;
 }
 
 void FSM::start_search_callback(

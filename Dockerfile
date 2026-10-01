@@ -111,7 +111,7 @@ RUN groupadd --non-unique --gid "${LOCAL_GID}" "${USERNAME}" \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USERNAME} \
     && chmod 0440 /etc/sudoers.d/${USERNAME}
 
-# Create directories and set ownership, so we don't need to recursively set ownership later.
+# Pre-create dirs owned by the dev user to avoid a recursive chown later.
 RUN mkdir -p "${PX4_AUTOPILOT_DIR}" /opt/micro_xrce_dds_agent_ws /opt/px4_msgs_ws \
     && chown -R "${USERNAME}:${USERNAME}" "${PX4_AUTOPILOT_DIR}" /opt/micro_xrce_dds_agent_ws /opt/px4_msgs_ws
 
@@ -126,8 +126,7 @@ RUN git clone --branch "${PX4_VERSION}" --depth 1 --recurse-submodules \
 RUN pip3 install --no-cache-dir \
     -r "${PX4_AUTOPILOT_DIR}/Tools/setup/requirements.txt"
 
-# Build the gz_x500 SITL target now so `make px4_sitl gz_x500` at container
-# runtime only has to launch it, not compile from scratch.
+# Prebuild SITL so `./stack sim` only launches it.
 RUN cd "${PX4_AUTOPILOT_DIR}" \
     && make px4_sitl_default
 
@@ -154,7 +153,6 @@ RUN mkdir -p /opt/px4_msgs_ws/src \
 USER root
 
 # The real bashrc lives in the bind-mounted repo, so editing it needs no rebuild.
-# Kept after the PX4 build so changes here don't invalidate that cache.
 RUN echo '[[ -f /workspace/scripts/container/bashrc ]] && source /workspace/scripts/container/bashrc' \
     >/home/${USERNAME}/.bashrc
 COPY scripts/container/entrypoint.sh /usr/local/bin/entrypoint.sh

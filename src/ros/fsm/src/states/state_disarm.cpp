@@ -1,7 +1,7 @@
 #include "fsm/fsm.hpp"
 
 void FSM::handle_state_disarmed() {
-  const auto kDisarmSettleDuration = rclcpp::Duration::from_seconds(2.0);
+  const auto kDisarmSettleDuration = rclcpp::Duration::from_seconds(disarm_settle_time_);
 
   if (!disarm_settle_started_) {
     RCLCPP_INFO(this->get_logger(), "Disarmed. Settling before requesting arm.");

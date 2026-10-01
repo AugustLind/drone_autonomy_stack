@@ -1,34 +1,19 @@
 #!/usr/bin/env bash
-#
-# Build, start, and use the sim_image dev container via Docker Compose.
-#
-# Usage:
-#   ./stack image    # build the Docker image
-#   ./stack up       # create/start sim_container, repo bind-mounted at /workspace
-#   ./stack shell    # open a shell in sim_container
-#   ./stack sim      # run PX4 SITL + Gazebo + Micro XRCE-DDS Agent in sim_container
-#   ./stack build    # colcon build the workspace in sim_container
-#   ./stack mission  # call the fsm start_search service in sim_container
-#   ./stack lint     # run clang-tidy in sim_container
-#   ./stack format   # run the pre-commit clang-format hook on all files
-#   ./stack gpu      # print the detected GPU mode (nvidia|dri|none)
-#   ./stack down     # stop and remove sim_container
+# Build, start, and use the sim_image dev container. Run without args for usage.
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BASE_COMPOSE="${REPO_ROOT}/config/compose.yaml"
+BASE_COMPOSE="${REPO_ROOT}/config/docker/compose.yaml"
 
 export LOCAL_UID="${LOCAL_UID:-$(id -u)}"
 export LOCAL_GID="${LOCAL_GID:-$(id -g)}"
-# Note: intentionally not named USERNAME - many shells/systems already
-# export that as the host login name, which would collide with the
-# in-container dev user name used below.
+# Not USERNAME: many shells export that as the host login name.
 CONTAINER_USERNAME="developer"
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") <image|up|shell|sim|build|mission|lint|format|gpu|down>
+Usage: $(basename "$0") <image|up|shell|sim|build|launch|mission|lint|format|gpu|down>
 
   image   build the Docker image (slow; only after Dockerfile changes)
   up      create (or resume) sim_container, bind-mounting the repo at /workspace,
@@ -38,6 +23,9 @@ Usage: $(basename "$0") <image|up|shell|sim|build|mission|lint|format|gpu|down>
           HEADLESS=0 for the Gazebo GUI, e.g. HEADLESS=0 ./stack sim
   build   colcon build the workspace in sim_container; extra args are passed
           through, e.g. ./stack build --packages-select fsm
+  launch  launch the drone stack (bringup/drone.launch.py) in sim_container so it
+          is ready for the start_search service; extra args are passed through,
+          e.g. ./stack launch params_file:=/workspace/my_params.yaml
   mission start the mission by calling /fsm_node/start_search in sim_container
   lint    run clang-tidy over src/ in sim_container (needs ./stack build first)
   format  run the pre-commit clang-format hook on all files, on the host, so the
@@ -92,12 +80,12 @@ case "$gpu_mode" in
     nvidia)
         export LOCAL_VIDEO_GID="${LOCAL_VIDEO_GID:-$(host_group_gid video 44)}"
         export LOCAL_RENDER_GID="${LOCAL_RENDER_GID:-$(host_group_gid render 109)}"
-        compose+=(-f "${REPO_ROOT}/config/compose.nvidia.yaml")
+        compose+=(-f "${REPO_ROOT}/config/docker/compose.nvidia.yaml")
         ;;
     dri)
         export LOCAL_VIDEO_GID="${LOCAL_VIDEO_GID:-$(host_group_gid video 44)}"
         export LOCAL_RENDER_GID="${LOCAL_RENDER_GID:-$(host_group_gid render 109)}"
-        compose+=(-f "${REPO_ROOT}/config/compose.dri.yaml")
+        compose+=(-f "${REPO_ROOT}/config/docker/compose.dri.yaml")
         ;;
 esac
 
@@ -124,6 +112,10 @@ case "${1:-}" in
         shift
         "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim bash -c \
             'source /workspace/scripts/container/source.sh && colcon build "$@"' colcon "$@"
+        ;;
+    launch)
+        shift
+        "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim /workspace/scripts/container/drone_launch.sh "$@"
         ;;
     mission)
         "${compose[@]}" exec --user "$CONTAINER_USERNAME" sim /workspace/scripts/container/mission_launch.sh

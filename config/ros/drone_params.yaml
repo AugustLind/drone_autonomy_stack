@@ -1,0 +1,17 @@
+fsm_node:
+  ros__parameters:
+    loop_period_ms: 100
+    disarm_settle_time: 2.0
+    acceptance_radius: 1.5
+    local_position_timeout: 0.2
+    return_altitude: 10.0
+
+    follower:
+      cruise_speed: 3.0
+      max_speed: 5.0
+      max_vertical_speed: 1.5
+      cross_track_gain: 0.8
+      altitude_gain: 1.0
+      slowdown_dist: 3.0
+      min_speed_ratio: 0.2
+      done_dist: 0.3

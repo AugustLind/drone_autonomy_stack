@@ -1,7 +1,7 @@
 services:
   sim:
     build:
-      context: ..
+      context: ../..
       dockerfile: Dockerfile
       args:
         LOCAL_UID: ${LOCAL_UID:-1000}
@@ -14,7 +14,7 @@ services:
       QT_X11_NO_MITSHM: "1"
       QT_QPA_PLATFORM: xcb
     volumes:
-      - ..:/workspace
+      - ../..:/workspace
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - px4-build:/opt/PX4-Autopilot/build
     stdin_open: true

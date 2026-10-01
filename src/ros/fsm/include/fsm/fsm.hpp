@@ -20,6 +20,7 @@ public:
   FSM();
 
 private:
+  void load_parameters();
   void fsm_loop();
   void publish_vehicle_command(
       uint16_t command, float param1 = 0.0f, float param2 = 0.0f, float param4 = 0.0f,
@@ -44,6 +45,14 @@ private:
   void start_search_callback(
       const std::shared_ptr<drone_interface::srv::StartSearch::Request> req,
       std::shared_ptr<drone_interface::srv::StartSearch::Response> res);
+  // Parameters
+  int loop_period_ms_{100};
+  double disarm_settle_time_{2.0};
+  double acceptance_radius_{1.5};
+  double local_position_timeout_{0.2};
+  double return_altitude_{10.0};
+  FollowerParams follower_params_;
+
   // Shared variables
   State current_state_{State::DISARMED};
   uint8_t arming_state_{px4_msgs::msg::VehicleStatus::ARMING_STATE_DISARMED};

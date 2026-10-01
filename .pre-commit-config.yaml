@@ -1,4 +1,4 @@
-# Skip colcon output and vendored/third-party packages (adjust to your repo)
+# Skip colcon output
 exclude: ^(build|install|log)/
 
 repos:
