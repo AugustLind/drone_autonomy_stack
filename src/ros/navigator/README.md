@@ -9,17 +9,36 @@ A small header/library package for coverage path planning and path following. No
 - `Point2D`, `Area` (a polygon of corners in the local NED frame — a rectangle is a 4-corner `Area`), `Waypoint` (x, y, z).
 - `generate_lawnmower(area, swath_width, altitude)` — generates a boustrophedon ("lawnmower") coverage path across `area`, with parallel legs `swath_width` apart, at a fixed `altitude`. Expects `area.corners` in `{bottom_left, bottom_right, top_left, top_right}` order.
 
+`include/navigator/path_follower.hpp`:
+
+- `VelocityCmd` — NED velocity `vx, vy, vz` [m/s], `yaw` [rad] and a `segment_done` flag.
+- `FollowerParams` — tuning for the follower (all exposed as `follower.*` parameters by `fsm`):
+
+  | Field | Default | Description |
+  | --- | --- | --- |
+  | `cruise_speed` | 3.0 | along-track speed [m/s] |
+  | `max_speed` | 5.0 | horizontal speed limit [m/s] |
+  | `max_vertical_speed` | 1.5 | vertical speed limit [m/s] |
+  | `cross_track_gain` | 0.8 | $k_e$ [1/s] |
+  | `altitude_gain` | 1.0 | $k_z$ [1/s] |
+  | `slowdown_dist` | 3.0 | $d_{\text{slow}}$, start braking this far from the segment end [m] |
+  | `min_speed_ratio` | 0.2 | $k_{\min}$, fraction of cruise speed kept while braking |
+  | `done_dist` | 0.3 | segment is done when this close to its end [m] |
+
+- `follow_segment(a, b, px, py, pz, params)` — velocity command that tracks the line from `a` to `b`. Waypoints use z-up altitude; the position `px, py, pz` is in PX4 local NED.
+
 ## Use
 
 ```cpp
 #include "navigator/lawnmower.hpp"
+#include "navigator/path_follower.hpp"
 
 Area area;
 area.corners = {{0, 0}, {50, 0}, {0, 100}, {50, 100}};
 std::vector<Waypoint> path = generate_lawnmower(area, /*swath_width=*/5.0, /*altitude=*/10.0);
 
 // Every control tick, follow the current segment and advance when it is done.
-VelocityCmd cmd = follow_segment(path[i], path[i + 1], x, y, z);
+VelocityCmd cmd = follow_segment(path[i], path[i + 1], x, y, z, params);
 if (cmd.segment_done) {
   i++;
 }
