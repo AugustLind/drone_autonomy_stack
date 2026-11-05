@@ -46,6 +46,8 @@ void FSM::load_parameters() {
   declare_follower("slowdown_dist", follower_params_.slowdown_dist);
   declare_follower("min_speed_ratio", follower_params_.min_speed_ratio);
   declare_follower("done_dist", follower_params_.done_dist);
+  declare_follower("lateral_tolerance", follower_params_.lateral_tolerance);
+  declare_follower("altitude_tolerance", follower_params_.altitude_tolerance);
 }
 
 void FSM::fsm_loop() {

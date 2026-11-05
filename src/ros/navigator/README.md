@@ -24,6 +24,8 @@ A small header/library package for coverage path planning and path following. No
   | `slowdown_dist` | 3.0 | $d_{\text{slow}}$, start braking this far from the segment end [m] |
   | `min_speed_ratio` | 0.2 | $k_{\min}$, fraction of cruise speed kept while braking |
   | `done_dist` | 0.3 | segment is done when this close to its end [m] |
+  | `lateral_tolerance` | 0.3 | maximum cross-track error for completion [m] |
+  | `altitude_tolerance` | 0.3 | maximum altitude error for completion [m] |
 
 - `follow_segment(a, b, px, py, pz, params)` — velocity command that tracks the line from `a` to `b`. Waypoints use z-up altitude; the position `px, py, pz` is in PX4 local NED.
 
@@ -98,6 +100,6 @@ $$
 
 ### Heading and switching
 
-The yaw setpoint faces along the segment, $\psi = \operatorname{atan2}(t_y, t_x)$. The segment is done when $d_{\text{rem}} <$ `done_dist`. Because this uses along-track progress rather than distance to the point, the follower still switches segments if the vehicle passes the end of the segment off to the side.
+The yaw setpoint faces along the segment, $\psi = \operatorname{atan2}(t_y, t_x)$. Completion requires $d_{\text{rem}} <$ `done_dist`, cross-track error within `lateral_tolerance`, and altitude error within `altitude_tolerance`. Overshoot is accepted only when both error tolerances are met. Once along-track progress reaches the completion threshold, forward motion stops while lateral and altitude corrections continue.
 
-A segment shorter than 1 mm is reported as done immediately, with only the vertical command and a NaN yaw.
+A segment shorter than 1 mm tracks its endpoint with horizontal and vertical corrections and a NaN yaw. Completion requires horizontal distance within `lateral_tolerance` and altitude error within `altitude_tolerance`.

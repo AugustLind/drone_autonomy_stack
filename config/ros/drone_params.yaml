@@ -15,3 +15,5 @@ fsm_node:
       slowdown_dist: 3.0
       min_speed_ratio: 0.2
       done_dist: 0.3
+      lateral_tolerance: 0.3
+      altitude_tolerance: 0.3

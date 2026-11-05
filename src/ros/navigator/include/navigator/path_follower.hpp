@@ -18,6 +18,8 @@ struct FollowerParams {
   float slowdown_dist{3.0f};       // start braking this far from segment end [m]
   float min_speed_ratio{0.2f};     // fraction of cruise speed kept while braking
   float done_dist{0.3f};           // segment is done when this close to its end [m]
+  float lateral_tolerance{0.3f};
+  float altitude_tolerance{0.3f};
 };
 
 // Computes a velocity command that tracks the straight line from a to b.
