@@ -77,6 +77,7 @@ RUN apt-get update && apt-get install --yes \
         python3-setuptools \
         python3-venv \
         python3-wheel \
+        python3-yaml \
         ros-jazzy-geometry-msgs \
         ros-jazzy-mavros \
         ros-jazzy-mavros-extras \
@@ -84,6 +85,7 @@ RUN apt-get update && apt-get install --yes \
         ros-jazzy-navigation2 \
         ros-jazzy-ros-gz \
         ros-jazzy-rosbridge-server \
+        ros-jazzy-v4l2-camera \
         rsync \
         shellcheck \
         sudo \

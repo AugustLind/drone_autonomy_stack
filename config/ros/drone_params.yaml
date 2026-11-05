@@ -1,3 +1,16 @@
+camera_bringup:
+  ros__parameters:
+    camera_source: sim
+    gz_image_topic: /world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image
+    gz_camera_info_topic: /world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info
+
+camera_node:
+  ros__parameters:
+    video_device: /dev/video0
+    image_size: [640, 480]
+    pixel_format: YUYV
+    output_encoding: rgb8
+
 fsm_node:
   ros__parameters:
     loop_period_ms: 100

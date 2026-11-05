@@ -60,3 +60,41 @@ Once the sim is running, build the ROS packages, launch the stack, and start a m
 `./stack mission` calls `/fsm_node/start_search` with a 20 × 20 m area (see [`scripts/container/mission_launch.sh`](scripts/container/mission_launch.sh)). Node parameters live in [`config/ros/drone_params.yaml`](config/ros/drone_params.yaml); pass another file with `./stack launch params_file:=/workspace/<file>.yaml`.
 
 Builds use [`config/colcon/colcon_defaults.yaml`](config/colcon/colcon_defaults.yaml) (symlink install, and `compile_commands.json` for `./stack lint`).
+
+## Camera
+
+`./stack launch` also starts the camera source selected in `config/ros/drone_params.yaml`:
+
+```yaml
+camera_bringup:
+  ros__parameters:
+    camera_source: sim
+```
+
+Set `camera_source` to `sim`, `hardware`, or `disabled`, then restart the launch. This value is read by bringup at startup; it is not a runtime-switchable node parameter. Parameter files without a `camera_bringup` section leave the camera disabled.
+
+Both sources publish `/camera/image_raw` (`sensor_msgs/msg/Image`) and `/camera/camera_info` (`sensor_msgs/msg/CameraInfo`). The sim source bridges the RGB camera already included in `gz_x500_depth`. The configured Gazebo topics assume the `default` world and vehicle instance `x500_depth_0`; change `gz_image_topic` and `gz_camera_info_topic` for another world or instance. Inspect available topics with `gz topic -l` inside the sim container.
+
+The hardware source starts `v4l2_camera` for a compatible USB/V4L2 camera. Configure its `video_device`, `image_size`, `pixel_format`, and `output_encoding` under `camera_node.ros__parameters`. The process must have permission to open the device. Docker does not pass cameras through by default; hardware use inside a container also requires a device mapping and access to the device's group. Cameras requiring a vendor-specific driver need another source implementation.
+
+After pulling this camera change, rebuild the image and bringup package:
+
+```bash
+./stack image
+./stack down
+./stack up
+./stack build --packages-select bringup
+```
+
+Run `./stack sim` and `./stack launch` in separate terminals. Inspect the feed from `./stack shell`:
+
+```bash
+ros2 topic hz /camera/image_raw
+ros2 topic echo /camera/camera_info --once
+```
+
+To launch only the camera from a sourced ROS workspace:
+
+```bash
+ros2 launch bringup camera.launch.py params_file:=/absolute/path/to/drone_params.yaml
+```
