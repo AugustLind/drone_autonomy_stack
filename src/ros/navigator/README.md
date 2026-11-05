@@ -7,7 +7,7 @@ A small header/library package for coverage path planning and path following. No
 `include/navigator/lawnmower.hpp`:
 
 - `Point2D`, `Area` (a polygon of corners in the local NED frame — a rectangle is a 4-corner `Area`), `Waypoint` (x, y, z).
-- `generate_lawnmower(area, swath_width, altitude)` — generates a boustrophedon ("lawnmower") coverage path across `area`, with parallel legs `swath_width` apart, at a fixed `altitude`. Expects `area.corners` in `{bottom_left, bottom_right, top_left, top_right}` order.
+- `generate_lawnmower(area, swath_width, altitude)` — generates a boustrophedon ("lawnmower") coverage path across `area`, with parallel legs spaced at most `swath_width` apart and legs on both boundaries, at a fixed `altitude`. Expects `area.corners` in `{bottom_left, bottom_right, top_left, top_right}` order.
 
 `include/navigator/path_follower.hpp`:
 

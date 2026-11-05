@@ -105,8 +105,11 @@ RUN pip3 install --no-cache-dir \
     mypy==1.11.2 \
     pre-commit==3.8.0
 
-# Non-root dev user, UID/GID matched to the host so bind-mounted files stay writable
-RUN groupadd --non-unique --gid "${LOCAL_GID}" "${USERNAME}" \
+# Non-root dev user, UID/GID matched to the host so bind-mounted files stay writable.
+# Drop the base image's ubuntu user (UID 1000) so the UID resolves to developer and
+# pip --user installs land in /home/developer/.local, not /home/ubuntu/.local.
+RUN userdel --remove ubuntu \
+    && groupadd --non-unique --gid "${LOCAL_GID}" "${USERNAME}" \
     && useradd --non-unique --uid "${LOCAL_UID}" --gid "${LOCAL_GID}" --create-home --shell /bin/bash "${USERNAME}" \
     && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USERNAME} \
     && chmod 0440 /etc/sudoers.d/${USERNAME}
