@@ -4,10 +4,10 @@ A base frame for testing your own drone autonomy code against PX4 SITL + Gazebo.
 
 ## Packages
 
-- [`src/ros/fsm`](src/ros/fsm/README.md) — the flight state machine node that talks to PX4.
-- [`src/ros/navigator`](src/ros/navigator/README.md) — lawnmower coverage path generation and the velocity path follower used by the FSM's search state.
-- `src/ros/drone_interface` — custom interfaces, currently the `StartSearch` service.
-- `src/ros/bringup` — `drone.launch.py`, which starts the drone nodes with their parameters.
+* [`src/ros/fsm`](src/ros/fsm/README.md): the flight state machine node that talks to PX4.
+* [`src/ros/navigator`](src/ros/navigator/README.md): lawnmower coverage path generation and the velocity path follower used by the FSM's search state.
+* `src/ros/drone_interface`: custom interfaces, currently the `StartSearch` service.
+* `src/ros/bringup`: `drone.launch.py`, which starts the drone nodes with their parameters.
 
 ## Config
 

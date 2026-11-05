@@ -4,12 +4,12 @@ The flight state machine node. Waits for a search mission on its `start_search` 
 
 ## States
 
-- `DISARMED` — waits `disarm_settle_time`, then requests arm once a mission has been accepted.
-- `ARMING` — sends `VEHICLE_CMD_COMPONENT_ARM_DISARM` until PX4 reports armed.
-- `TAKEOFF` — sends `VEHICLE_CMD_NAV_TAKEOFF` in place, up to the mission altitude above home, until the altitude is reached.
-- `SEARCH` — generates a lawnmower coverage path (via the `navigator` package) over the requested area, with an extra first leg from the current position to the first corner. It switches to OFFBOARD mode in velocity control and flies each segment with `follow_segment` (see the [navigator README](../navigator/README.md#path-follower-math) for the math). If `VehicleLocalPosition` is older than `local_position_timeout`, it commands zero velocity until fresh data arrives.
-- `RETURN` — flies back to home at `return_altitude` using a position setpoint, then lands.
-- `LANDING` — sends `VEHICLE_CMD_NAV_LAND` until PX4 reports disarmed, then goes back to `DISARMED` to wait for the next mission.
+* `DISARMED`: waits `disarm_settle_time`, then requests arm once a mission has been accepted.
+* `ARMING`: sends `VEHICLE_CMD_COMPONENT_ARM_DISARM` until PX4 reports armed.
+* `TAKEOFF`: sends `VEHICLE_CMD_NAV_TAKEOFF` in place, up to the mission altitude above home, until the altitude is reached.
+* `SEARCH`: generates a lawnmower coverage path (via the `navigator` package) over the requested area, with an extra first leg from the current position to the first corner. It switches to OFFBOARD mode in velocity control and flies each segment with `follow_segment` (see the [navigator README](../navigator/README.md#path-follower-math) for the math). If `VehicleLocalPosition` is older than `local_position_timeout`, it commands zero velocity until fresh data arrives.
+* `RETURN`: flies back to home at `return_altitude` using a position setpoint, then lands.
+* `LANDING`: sends `VEHICLE_CMD_NAV_LAND` until PX4 reports disarmed, then goes back to `DISARMED` to wait for the next mission.
 
 The loop runs every `loop_period_ms` (`fsm_loop`, a wall timer).
 

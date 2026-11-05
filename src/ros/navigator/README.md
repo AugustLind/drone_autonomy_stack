@@ -1,18 +1,18 @@
 # navigator
 
-A small header/library package for coverage path planning and path following. No ROS node — just a `navigator` CMake target that other packages (currently `fsm`) link against.
+A small header/library package for coverage path planning and path following. It provides a `navigator` CMake target rather than a ROS node that other packages (currently `fsm`) link against.
 
 ## API
 
 `include/navigator/lawnmower.hpp`:
 
-- `Point2D`, `Area` (a polygon of corners in the local NED frame — a rectangle is a 4-corner `Area`), `Waypoint` (x, y, z).
-- `generate_lawnmower(area, swath_width, altitude)` — generates a boustrophedon ("lawnmower") coverage path across `area`, with parallel legs spaced at most `swath_width` apart and legs on both boundaries, at a fixed `altitude`. Expects `area.corners` in `{bottom_left, bottom_right, top_left, top_right}` order.
+* `Point2D`, `Area` (a polygon of corners in the local NED frame; a rectangle is an `Area` with four corners), `Waypoint` (x, y, z).
+* `generate_lawnmower(area, swath_width, altitude)`: generates a boustrophedon ("lawnmower") coverage path across `area`, with parallel legs spaced at most `swath_width` apart and legs on both boundaries, at a fixed `altitude`. Expects `area.corners` in `{bottom_left, bottom_right, top_left, top_right}` order.
 
 `include/navigator/path_follower.hpp`:
 
-- `VelocityCmd` — NED velocity `vx, vy, vz` [m/s], `yaw` [rad] and a `segment_done` flag.
-- `FollowerParams` — tuning for the follower (all exposed as `follower.*` parameters by `fsm`):
+* `VelocityCmd`: NED velocity `vx, vy, vz` [m/s], `yaw` [rad] and a `segment_done` flag.
+* `FollowerParams`: tuning for the follower (all exposed as `follower.*` parameters by `fsm`):
 
   | Field | Default | Description |
   | --- | --- | --- |
@@ -27,7 +27,7 @@ A small header/library package for coverage path planning and path following. No
   | `lateral_tolerance` | 0.3 | maximum cross-track error for completion [m] |
   | `altitude_tolerance` | 0.3 | maximum altitude error for completion [m] |
 
-- `follow_segment(a, b, px, py, pz, params)` — velocity command that tracks the line from `a` to `b`. Waypoints use z-up altitude; the position `px, py, pz` is in PX4 local NED.
+* `follow_segment(a, b, px, py, pz, params)`: velocity command that tracks the line from `a` to `b`. Waypoints use z-up altitude; the position `px, py, pz` is in PX4 local NED.
 
 ## Use
 
@@ -70,9 +70,9 @@ e = \mathbf{r} \cdot \hat{\mathbf{n}}, \qquad
 d_{\text{rem}} = L - s
 $$
 
-- $s$ is the along-track progress.
-- $e$ is the signed cross-track error (distance from the line).
-- $d_{\text{rem}}$ is the distance left to the end of the segment.
+* $s$ is the along-track progress.
+* $e$ is the signed cross-track error (distance from the line).
+* $d_{\text{rem}}$ is the distance left to the end of the segment.
 
 ### Horizontal velocity
 
